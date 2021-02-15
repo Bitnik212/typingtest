@@ -29,7 +29,8 @@ export default {
       SelectChar
   },
   props: {
-    string: String
+    string: String,
+    step: Number
   },
   data() {
     return {
@@ -43,10 +44,15 @@ export default {
         typingSpeed: 0,
         typingAccuracy: 0,
         testTime: 0,
-        uncorrectedCharsCount: 1
+        uncorrectedCharsCount: 1,
+        tempStep: this.step,
     }
   },
   methods: {
+      NextStep () {
+        this.$emit("nextStep", this.tempStep++)
+        console.info(this.tempStep)
+      },
       handleKeyPress (e) {
         let key = e.key
         this.nowKey = key
