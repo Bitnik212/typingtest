@@ -3,14 +3,18 @@
     <div>
       <SelectChar :string="string" :selectChar="nowStep" :uncorrectChar="!uncorrectChar" />
       <button v-on:click="prevStep()">Назад</button>
-      <button v-on:click="clearStep()">заново</button>
+      <button v-on:click="stopTest()">заново</button>
+      <button v-on:click="startTest()">начать</button>
     </div>
     <div>
       <div>
-        <span>Скорость: </span>
+        <span>Скорость: {{typingSpeed}}</span>
       </div>
       <div>
-        <span>Точность: </span>
+        <span>Точность: {{typingAccuracy}}</span>
+      </div>
+      <div>
+        <span>Пройденное время: {{testTime}}</span>
       </div>
     </div>
   </div>
@@ -31,24 +35,35 @@ export default {
     return {
         nowKey: undefined,
         nowStep: 0,
+        oldStep: 0,
         uncorrectChar: true,
-        exeptionKeyWord: ["Shift", "Control", "Escape"]
+        exeptionKeyWord: ["Shift", "Control", "Escape", "GroupNext"],
+        intervalID: undefined,
+        testStarted: false,
+        typingSpeed: 0,
+        typingAccuracy: 0,
+        testTime: 0
     }
   },
   methods: {
       handleKeyPress (e) {
         let key = e.key
         this.nowKey = key
-        console.info(key)
-        console.info("key = ", key)
-        if (!this.isExeptionKW(key))
-        if (this.compareChar(key)) {
+        // console.info("key = ", key)
+        if (!this.isExeptionKW(key)) {
+          if (this.compareChar(key)) {
             this.uncorrectChar = true
-            this.nowStep++
-        } else {
-            this.uncorrectChar = false
+            this.nextStep()
+            if (this.nowStep == 1) {
+              this.startTest()
+            }
+          } else {
+              this.uncorrectChar = false
+          }
+          
         }
-        console.info("nowStep = ", this.nowStep)
+        
+        // console.info("nowStep = ", this.nowStep)
       },
       compareChar(char) {
           if (this.nowStep <= this.string.length ){
@@ -72,25 +87,43 @@ export default {
       clearStep () {
           if (this.nowStep != 0) 
           this.nowStep = 0
+          clearInterval(this.intervalID)
+      },
+      stopTest() {
+        this.clearStep()
+        clearInterval(this.intervalID)
+        this.testStarted = false
+        this.testTime = 0
       },
       nextStep() {
         if (this.nowStep >= 0 & this.nowStep <= this.string.length ) 
         this.nowStep++
       },
+      startTest() {
+        
+        this.intervalID = setInterval(() => {
+          this.testTime++
+          this.typingSpeed = (this.nowStep/this.testTime*60).toFixed()
+        }, 1000)
+        this.testStarted = true
+      },
+      accuracy () {
+        
+      },
       isExeptionKW(key) {
         if  (this.exeptionKeyWord.find(kw => kw == key) === undefined) {
-          console.info("bbb")
           return false
         } else {
-          console.info("aaaa")
           return true
         }
-      }
+      },
+
   },
   mounted() {
     document.addEventListener("keydown", (e) => {
         this.handleKeyPress(e)
-    })
+    });
+    
   }
   
 }
