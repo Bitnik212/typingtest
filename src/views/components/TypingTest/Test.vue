@@ -31,15 +31,17 @@ export default {
     return {
         nowKey: undefined,
         nowStep: 0,
-        uncorrectChar: true
+        uncorrectChar: true,
+        exeptionKeyWord: ["Shift", "Control", "Escape"]
     }
   },
   methods: {
-      
       handleKeyPress (e) {
-          let key = e.key
+        let key = e.key
         this.nowKey = key
+        console.info(key)
         console.info("key = ", key)
+        if (!this.isExeptionKW(key))
         if (this.compareChar(key)) {
             this.uncorrectChar = true
             this.nowStep++
@@ -57,6 +59,7 @@ export default {
                 return false
             }
           } else {
+            // здесь будет что-то про конец теста
               console.info("(((((((")
           }
           
@@ -69,6 +72,19 @@ export default {
       clearStep () {
           if (this.nowStep != 0) 
           this.nowStep = 0
+      },
+      nextStep() {
+        if (this.nowStep >= 0 & this.nowStep <= this.string.length ) 
+        this.nowStep++
+      },
+      isExeptionKW(key) {
+        if  (this.exeptionKeyWord.find(kw => kw == key) === undefined) {
+          console.info("bbb")
+          return false
+        } else {
+          console.info("aaaa")
+          return true
+        }
       }
   },
   mounted() {
