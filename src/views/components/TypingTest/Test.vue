@@ -1,10 +1,10 @@
 <template>
   <div>
     <div>
-      <SelectChar :string="string" :selectChar="nowStep" :uncorrectChar="!uncorrectChar" />
-      <button v-on:click="prevStep()">Назад</button>
+      <SelectChar :string="string" :selectChar="nowStep" :uncorrectChar="uncorrectChar" />
+      <!-- <button v-on:click="prevStep()">Назад</button> -->
       <button v-on:click="stopTest()">заново</button>
-      <button v-on:click="startTest()">начать</button>
+      <!-- <button v-on:click="startTest()">начать</button> -->
     </div>
     <div>
       <div>
@@ -36,13 +36,14 @@ export default {
         nowKey: undefined,
         nowStep: 0,
         oldStep: 0,
-        uncorrectChar: true,
+        uncorrectChar: false,
         exeptionKeyWord: ["Shift", "Control", "Escape", "GroupNext"],
         intervalID: undefined,
         testStarted: false,
         typingSpeed: 0,
         typingAccuracy: 0,
-        testTime: 0
+        testTime: 0,
+        uncorrectedCharsCount: 1
     }
   },
   methods: {
@@ -52,18 +53,17 @@ export default {
         // console.info("key = ", key)
         if (!this.isExeptionKW(key)) {
           if (this.compareChar(key)) {
-            this.uncorrectChar = true
+            this.uncorrectChar = false
             this.nextStep()
             if (this.nowStep == 1) {
               this.startTest()
             }
           } else {
-              this.uncorrectChar = false
+              this.uncorrectedCharsCount++
+              this.uncorrectChar = true
           }
           
         }
-        
-        // console.info("nowStep = ", this.nowStep)
       },
       compareChar(char) {
           if (this.nowStep <= this.string.length ){
@@ -104,11 +104,12 @@ export default {
         this.intervalID = setInterval(() => {
           this.testTime++
           this.typingSpeed = (this.nowStep/this.testTime*60).toFixed()
+          this.accuracy(this.uncorrectedCharsCount)
         }, 1000)
         this.testStarted = true
       },
-      accuracy () {
-        
+      accuracy (newValue) {
+        this.typingAccuracy = (100 - newValue/this.string.length*100).toFixed()
       },
       isExeptionKW(key) {
         if  (this.exeptionKeyWord.find(kw => kw == key) === undefined) {
