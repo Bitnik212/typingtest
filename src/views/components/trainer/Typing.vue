@@ -1,9 +1,11 @@
 <template>
-  <div>
+  <div class="">
     <!-- <h3>страница</h3> -->
     <SelectChar :string="string" :selectChar="nowStep" :uncorrectChar="!uncorrectChar" />
-    <button v-on:click="prevStep()">Назад</button>
-    <button v-on:click="clearStep()">заново</button>
+    <!-- <button v-on:click="prevStep()">Назад</button> -->
+    <div class="my-2">
+      <button v-on:click="clearStep()" class="btn btn-secondary px-2">Начать сначала</button>
+    </div>
   </div>
 </template>
 
