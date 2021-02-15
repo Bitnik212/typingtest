@@ -19,7 +19,7 @@ export default {
 
 <style>
     #homelayout{
-        background-color: #ababab;
+        background-color: rgba(0,0,10,0.7);
         color: white;
     }
     
