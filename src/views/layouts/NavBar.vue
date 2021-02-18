@@ -23,14 +23,6 @@
                         Тренажер 
                     </router-link>
                 </li>
-                <li class="nav-item">
-                    <router-link 
-                        class="nav-link h5 font-weight-normal" 
-                        to="/settings" 
-                    >
-                        Настройки 
-                    </router-link>
-                </li>
             </ul>
             </div>
         </div>
