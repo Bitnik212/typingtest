@@ -1,21 +1,28 @@
 <template>
-  <div>
-    <div>
-      <SelectChar :string="string" :selectChar="nowStep" :uncorrectChar="uncorrectChar" />
-      <!-- <button v-on:click="prevStep()">Назад</button> -->
-      <button v-on:click="stopTest()">заново</button>
-      <!-- <button v-on:click="startTest()">начать</button> -->
-    </div>
-    <div>
-      <div>
-        <span>Скорость: {{typingSpeed}}</span>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-10">
+        <h4 class="text-white-50 mb-3">Просто начни печатать и тест начнется</h4>
+        <SelectChar class="rounded text-wrap bg-dark p-3" :string="string" :selectChar="nowStep" :uncorrectChar="uncorrectChar" />
       </div>
-      <div>
-        <span>Точность: {{typingAccuracy}}</span>
+      <div class="col-2 p-3 rounded text-wrap bg-dark border-radius-5">
+        <div class="fs-1 fw-bold">
+          Скорость: {{typingSpeed}}
+        </div>
+        <div>
+          <span>Точность: {{typingAccuracy}}</span>
+        </div>
+        <div>
+          <span>Пройденное время: {{testTime}}</span>
+        </div>
       </div>
-      <div>
-        <span>Пройденное время: {{testTime}}</span>
+      <div class="my-3 ">
+        <button v-on:click="PrevStep()" class="btn btn-primary px-2 mr-2">Назад</button>
+        <button v-on:click="stopTest()" class="btn btn-danger px-2 mx-2 ">Заново</button>    
       </div>
+    
+
+    
     </div>
   </div>
 </template>
@@ -36,7 +43,7 @@ export default {
     return {
         nowKey: undefined,
         nowStep: 0,
-        oldStep: 0,
+        // oldStep: 0,
         uncorrectChar: false,
         exeptionKeyWord: ["Shift", "Control", "Escape", "GroupNext"],
         intervalID: undefined,
@@ -51,7 +58,16 @@ export default {
   methods: {
       NextStep () {
         this.$emit("nextStep", this.tempStep++)
-        console.info(this.tempStep)
+      },
+      PrevStep () {
+        this.$emit('prevStep', this.tempStep--)
+      },
+      finalTest () {
+        this.$emit('testResult', {
+          "accuracy": this.typingAccuracy,
+          "speed": this.typingSpeed
+        })
+        this.NextStep()
       },
       handleKeyPress (e) {
         let key = e.key
@@ -68,11 +84,10 @@ export default {
               this.uncorrectedCharsCount++
               this.uncorrectChar = true
           }
-          
         }
       },
       compareChar(char) {
-          if (this.nowStep <= this.string.length ){
+          if (this.nowStep < this.string.length-1 ){
             let correctchar = this.string[this.nowStep]
             if (correctchar == char) {
                 return true
@@ -81,7 +96,8 @@ export default {
             }
           } else {
             // здесь будет что-то про конец теста
-              console.info("(((((((")
+              // console.info("Конец теста!!")
+              this.finalTest()
           }
           
       },
